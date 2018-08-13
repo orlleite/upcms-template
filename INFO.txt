@@ -1,0 +1,541 @@
+kldit.com
+
+At the root, you have:
+
+__custom_php folder 
+You put your custom php files here.
+
+init.php
+Called before making any operation.
+So you can load something here.
+Set your custom php files to be open.
+
+menu.json
+Set your menu here.
+
+procedures
+Put your procedures files here.
+
+
+MENU file
+
+{
+	"menu":
+	{
+		// Name of the first menu, in this case it's a
+		// menu group.
+		"products":
+		{
+			// Icon shown
+			"icon":"files-o",
+			
+			// Name displayed
+			"title":"Catálogo",
+			
+			// Sub menus
+			"subs":
+			{
+				// link, is the link.
+				"categories":{ "link":"page://list-content/categories", "title":"Categorias" },
+				"items":{ "link":"page://list-content/items", "title":"Ítens" }
+			}
+		}
+	},
+	
+	// The first page one want to show, when the user connect to your service.
+	"init":null
+}
+
+
+
+PROFILE
+it's a folder with at least three files.
+map.json
+page.json
+layout.json
+
+The name of the folder will be the alias when making selections.
+
+MAP file:
+This indicates how to handle the database values.
+
+
+{
+	// Set column of the table to be used as primary key
+	// When you open to edit a item, it will add: WHERE id = ?
+	"id":"id",
+	
+	// Name of the table
+	"table":"items",
+	
+	// Set the where rules, bond using 'AND' and 'EQUAL_TO' rule. 
+	// So "deleted":0 => WHERE deleted = 0
+	// "pty":["product_type != ?", 3] => WHERE product_type != ?, binding: 3
+	// The rule below will produce: WHERE items.deleted=? AND (product_type != 3)
+	// If you add a item using this rule, only the 'EQUAL_TO' will be added.
+	// The custom rule "product_type != ?" will not.
+	"where":{ "deleted":0, "pty":["product_type != ?", 3] },
+	
+	// When creating a item in the table, you can set some columns to have a default
+	// value.
+	"defaults":{},
+	
+	// Default order by. Not working, because it was moved to page.json. But
+	// I don't know if there some part that relies on this. So I'm keeping here for
+	// now.
+	"orderby":[["name", "ASC"]],
+	
+	// Only the main object of the map.json file has this. Add here your subtables.
+	"reltables":{},
+	
+	// Here you put or fields to create your forms and lists.
+	"fields":{},
+	
+	// Define permissions to access or not.
+	"access":
+	{
+		// Rules for client trying to add a item.
+		// You can have list, get (a item), add, edit and delete.
+		"add":
+		{
+			// The procedure name or function used to validate your operation.
+			// It is a subject for another time.
+			"default_permission":{ 
+				// In case user don't permission.
+				"message":"Você não possui acesso a esta operação.", 
+				// Procedure or function?
+				"procedure":true, 
+				
+				// You can send values for the procedure.
+				"values":{ "permission_name":"ADVERTISE_ADD" }
+			}
+		}
+	},
+	
+	// Before X and after X are procedures names that runs at those situations.
+	// For example, you want to increase a counter, or register what the user did.
+	// Here you do that.
+	"before":{ 
+		"create":"item_add", 
+		"save":"item_edit", 
+		"delete":"item_remove" 
+	},
+	
+	"after":{ 
+		"create":"item_add", 
+		"save":"item_edit", 
+		"delete":"item_remove" 
+	},
+	
+	// It's here, for now.
+	// If you want a search bar when listing this profile.
+	"search":
+	{
+		// Those are fields. But you have to add custom two properties.
+		"termo":{  "type":"simpletext", "title":"Busca", 
+		
+		// The fields from the field list you want to search.
+		"fields":["name", "age"], 
+	
+		// How it should search, like, equal, more-equal, less-equal.
+		// More options will be added in near future.
+		"search-mode":"like" },
+		
+		"search_cidade":{ "title":"Cidade", "type":"select",
+			"fields":["cliente_municipio"], "search-mode":"equal",
+			"options":
+			[
+				{ "title":"", "value":"" }
+			]
+		}
+	}
+}
+
+RELTABLES:
+
+You can join some tables, or for fields references here.
+
+The name will be used to create a alias when selecting.
+"my_cat":{ 
+	"id":"id", 
+	"table":"categories", 
+	
+	// This will produce: 
+	// LEFT JOIN my_cat.col = another_table.col
+	// You can have multiples rules, all be added to JOIN ON ... bonded with 'AND's
+	"join":["LEFT_JOIN:col=another_table.col"], 
+	
+	// You can have where here too. Just keep in mind all 'wheres' will be
+	// in the "main" selection query.
+	"where":{ "deleted":0 }
+}
+
+FIELDS:
+
+Here the things relies on each field you're using.
+Let's see some commons properties.
+
+The name will be used to create a alias when selecting and editing.
+"name":{
+	
+	// Type of the field. It's usually the name of the file at 
+	// lib/cms/fields/. But you have ways to add fields without to
+	// put it in this folder.
+	"type":"simpletext",
+	
+	// Display name when selecting, editing.
+	"title":"Nome", 
+	
+	// Is this field required? If so, you have to fill with a valid value.
+	"required":true,
+	
+	// It's like the html disabled="disabled"
+	"disabled":false,
+	
+	// Visibility of the field. You have to put "visible" or "hidden".
+	"visible":"{POST.cliente_tipo@=1?\"hidden\":\"visible\"}",
+	
+	// Mask the value inputed by the user.
+	// ex: 1234567890 => 12 345
+	"mask":"99 999",
+	
+	// Add a prefix to the field. For a instance, you have
+	// a money field, you can add US$ the that.
+	"pre":"{POST.unit@=\"un\"?\"\":\"+PREÇO\"}",
+	
+	// Posfix
+	"pos":"{POST.unit@=\"un\"?\"\":\"+PREÇO\"}",
+	
+	// The alias for table the value for this field came from.
+	// If you omit it will use the root table.
+	"from":"my_cat",
+	
+	// The name of the column the value for this field came from.
+	// If you omit it will use the name of the field.
+	"column":"name",
+	
+	// A text used as help to know the proporse of this field to the user.
+	"help":"This field is used for example",
+	
+	// Validation of the field. That only happens when the field is required or
+	// the user fill with something.
+	"validation":
+	{
+		// Rules applied, usually is the name of the file at lib/cms/validators.
+		"rules":
+		{
+			// Not empty rule, self explanatory. Doesn't make sense if your field
+			// is not required.
+			"not-empty":{ 
+				// Message to be shown in case of error.
+				"message":"Preencha o nome", 
+			
+				// Icon to be shown in case of error.
+				"icon":"remove", 
+				
+				// css class to be added to the field in case of error.
+				"class":"has-error" 
+			},
+			
+			// That is a unique rule. So, you cannot have another item in the same 
+			// table with this same value. Unique serial number, unique name...
+			"unique":{ 
+				"message":"Já existe outro item com este nome", 
+				"icon":"remove", 
+				"class":"has-error",
+				
+				// That is not required.
+				//  types: 
+		 		// full-query: uses the entire query to check if it's unique
+		 		// table-query: uses the table query removing joins
+		 		// table: just look if in the table exists any other with the same value
+				"type":"table" }
+		},
+		
+		// In case it's valid.
+		"success":{ 
+			// Message, icon and css class to be shown.
+			"message":"", "icon":"ok", "class":"has-success" 
+		},
+		
+		// If you check this, the validation will be applied when the user changes the value.
+		// Not only when the form is submitted.
+		"onChange":true,
+		
+		// You can request to update fields after this field has changed value.
+		"updates":["anotherfield"]
+	}
+}
+
+
+// Fields can have custom properties or even ignore one from the list above.
+
+SELECT Field:
+
+	// You have to add this, if you are creating a select field.
+	// Those options are used to list for the user.
+	"options":
+	[
+		// Title to display, value to save in db.
+		{ "title":"Não especificado", "value":0 }
+		
+		// this is a dynamic option. So, select will get from the "from" table
+		// found in "reltables". It will ignore joins. You have to fill
+		// the title and value with the name of the columns fo fill it.
+		// Becareful to not fill with many options making it slow for the client.
+		{ "type":"dynamic", "title":"name", "value":"id", "from":"receitas" }
+	]
+
+
+
+BRACKETS INSTRUCTIONS
+
+Not all, but most of the properties has this feature.
+Consider you have two fields:
+
+type<select>
+- example 1:1
+- example 2:2 
+- custom:3
+
+amount<number>
+
+If the user select type, custom. The amount should be filled. In order to do that
+we can do as follow:
+
+"amount":{ 
+	"...":"...", 
+	
+	"required":"{POST.type==custom?true:false}"
+}
+
+We can apply it to disabled too.
+
+Brackets are supported for few options. `==`, `!=`, `>=`, `<=` and `@=`.
+This `@=` means equal-or-not-set-to.
+
+You can nest brackets.
+"{OBJECT==1?{VALUE2==3?\"Show this message\":\"Other message\"}:\"Else message\"}"
+
+
+
+
+
+
+PAGE file:
+This handle how to present the values to the user.
+
+{
+	// Ignored.
+	"type":"default-edition",
+	
+	// Ignored.
+	"title":"Ítens",
+	
+	// Oh dear, ignored too.
+	// Those were moved below.
+	"icon":"files-o",
+
+	// Explains haw to list.
+	// It's limited, but solve most of the problems.
+	"list":
+	{
+		// Name shown
+		"title":"Ítens",
+		
+		// If you want to show the id of the row.
+		"showid":false,
+		
+		// If user can remove it. (show remove button).
+		"removable":true,
+		
+		// Show add button.
+		"addable":true,
+		
+		// Let user edit when click in a row.
+		"editable":true,
+		
+		// Let user change order by.
+		"allow-custom-order":true,
+		
+		// Number of items displayed each page.
+		"page-limit":30,
+		
+		// If user wants to edit, let it be on a modal or as another navigation page.
+		"open-add-as":"modal",
+		"open-edit-as":"modal",
+		
+		// If you want a custom link to be opened:
+		"add-link":"modal://add-content/my-custom-add",
+		
+		// If you want a custom edit page when click in a link:
+		"line-click":"modal://edit-content/my-custom-edit/{id}",
+		
+		// If you want to split by dates, for example.
+		// The field below will be a full row to indicate a change.
+		"group-by":"date",
+		
+		// Fields shown in list.
+		"fields":
+		{
+			// Size is col-md- size.
+			"image":{ "size":2 },
+			"name":{ "size":7 },
+			"price":{ "size":3 }
+		}
+	},
+	
+	// When adding a item.
+	"add":
+	{
+		// Title displayed
+		"title":"Ítem",
+		
+		// Text of the button used to submit the form.
+		"submit-button-name":"Save",
+		
+		// What happens if things are done right. 
+		// 'close', 'close-refresh', 'nothing', 'refresh', 'page:'.
+		// Refresh means, you create a item in a modal, after that
+		// you want to close it and refresh the list page.
+		// And page://... means a redirect to another profile.
+		"redirect-after-submit":"close-refresh",
+		
+		// If you're using a modal.
+		"modal-params":{ 
+			// Full screen means almost the entire page screen size.
+			"fullscreen":false,
+			
+			// Set a min and max width and height size.
+			"min-width":500,
+			"min-height":300,
+		
+			// Apply a margin bottom for the ".modal-body".
+			"body-margin-bottom":0 },
+			
+		"message":{
+			// in case of success.
+			"save":"Ítem criado com sucesso.",
+			
+			// In case of invalid. Currently the only supported option.
+			// First invalid field message will be shown as an alert box.
+			"validation":"first-invalid-field"
+			},
+
+		// Deprecated but has to be here, for now.
+		"mode":"tabs",
+		
+		// You can omit this, but if you want, for an instance, two kinds
+		// of layout. One for add and one for edit. You have to set those here
+		// and on edit.
+		"layout":"layout"
+	},
+
+	// Same as add.
+	"edit":
+	{
+		"title":"Ítem",
+		"submit-button-name":"Salvar",
+		"redirect-after-submit":"close-refresh",
+		"modal-params":{ "fullscreen":false, "min-width":650, "min-height":450 },
+		"message":{
+			"save":"Ítem editado com sucesso.",
+			"validation":"first-invalid-field"
+			},
+
+		"mode":"tabs"
+	},
+	
+	// There is no page for delete. So it's odd. We didn't find (yet) no other
+	// place to set this. If you want the delete operation to remove the row, just
+	// don't add those lines below.
+	"delete":
+	{
+		// My delete will only update a flag in my table.
+		"type":"update",
+		
+		// It's called fields, but, indeed works as columns of the table.
+		"fields":{ "deleted":1 }
+	}
+}
+
+
+
+LAYOUT file
+
+It's like bootstrap written using json. Layout files are made
+to build form pages, mixing visual blocks and fields found in map.json.
+
+You add the type of the block and those sub blocks.
+
+[{
+	// This page is divided in tabs. Not using bs4, but it's like that.
+	// https://getbootstrap.com/docs/4.0/components/navs/#javascript-behavior
+	"type":"nav-tabs",
+	
+	// html id.
+	"id":"main",
+	
+	// The content of this nav-tabs
+	"subs":
+	[{
+		// First tab
+		"type":"tab",
+		
+		// Name shown
+		"title":"Person",
+		"id":"person",
+		
+		// Content of it:
+		"subs":
+		[
+			// Field, target is the field name we have in the map.json file.
+			{ "type":"field", "target":"selling" },
+			
+			{
+				// Row and fields:
+				// https://getbootstrap.com/docs/4.0/layout/grid/
+				"type":"row",
+				"subs":[
+					// Set size-md.
+					{ "type":"field", "target":"name", "size-md":6 },
+					{ "type":"field", "target":"last-name", "size-md":6 }]
+			},
+			
+			// Another field.
+			{ "type":"field", "target":"description" }
+		]
+	},
+	
+	{
+		// Another tab
+		"type":"tab",
+		"title":"About",
+		"id":"about",
+		"subs":
+		[
+			{ "type":"field", "target":"photo" },
+			{ "type":"field", "target":"age" },
+			{ "type":"field", "target":"has-life" }
+		]
+	},
+	
+	{
+		// Another tab
+		// visible, just like the one from map. We can set a bracket instruction.
+		"visible":"{SETTINGS.has-life==0?\"visible\":\"hidden\"}",
+		"type":"tab",
+		"title":"Children",
+		"id":"children",
+		"subs":
+		[
+			{ "type":"field", "target":"childre-names" }
+		]
+	}]
+}]
+
+// You can add more items found in the from js.
+// Button, ButtonGroup, Column, Dropdown, HorizontalRule, ImageButton,
+// List (there a type of field for that), Row, Tab, Table (it's behind the scene 
+// to build the list page), Thumb, ToggleButton, WidgetHeader (nice to split content 
+// in the same tab), LineChart (more will be supported soon).
