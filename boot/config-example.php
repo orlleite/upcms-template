@@ -13,7 +13,7 @@ class Config
 	const DATABASE_PORT = '3306'; // Default: 3306
 	const DATABASE_USER = 'root';
 	const DATABASE_PASS = '';
-	const DATABASE_NAME = 'kldit-example';
+	const DATABASE_NAME = 'upcms-template';
 	
 	const DATABASE_SSL		= false;
 	const DATABASE_SSL_CA	= NULL;//"mysql-ca.pem";
@@ -31,12 +31,11 @@ class Config
 	// const DEFAULT_NAME_AUTHOR = '';
 	// const SITE_NAME = '';
 	
-	const FULL_APP_PATH = '/Users/.../.../kldit-example/';
+	const FULL_APP_PATH = '/Users/.../.../upcms-template/';
 	const STORAGE_PATH = 'storage';
-	const BASE_SITE = 'http://localhost/kldit-example/';
 	
 	## SITE CONFIG
-	const PATH_NAME = 'kldit-example/'; // Default: '/'
+	const PATH_NAME = 'upcms-template/'; // Default: '/'
 	const SITE_HTTP = 'http://localhost/';
 	
 	const PATH_NAMES = '';
@@ -45,6 +44,8 @@ class Config
 	## CONFIG ##
 	// Environment: production | development | adjusting
 	const ENV = 'development';
+	const MYSQL_LOG_PATH = "log/mysql.log";
+	const ERROR_LOG_PATH = "log/errors.log";
 }
 
 class CMSConfig
@@ -58,7 +59,6 @@ class CMSConfig
 	const USERS_NAME_COLUMN = 'name';
 	const USERS_USERNAME_COLUMN = 'email';
 	const USERS_PASSWORD_COLUMN = 'password';
-	const USERS_SESSION_VAR = 'example_login_id';
 	
 	const CONNECTION_SESSION_VAR = 'teste_connection_id';
 	

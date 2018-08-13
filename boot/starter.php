@@ -22,10 +22,10 @@ class MainApplication extends Application
 		if( Config::ENV == 'development' )
 		{
 			touch( INCLUDE_PATH."../log/mysql.log" );
-			define("MYSQL_LOG_FILE", INCLUDE_PATH."../log/mysql.log");
+			define("MYSQL_LOG_FILE", INCLUDE_PATH."../".Config::MYSQL_LOG_PATH);
 			define("MATRIX_QUERY_DEBUG", 1);
 			
-			ini_set('error_log', INCLUDE_PATH.'../log/errors.log');
+			ini_set('error_log', INCLUDE_PATH.'../'.Config::ERROR_LOG_PATH);
 		}
 
 		switch( Config::DATABASE_TYPE )
