@@ -1,0 +1,3 @@
+[submodule "upcms"]
+	path = upcms
+	url = git@github.com:webdefault/upcms.git
