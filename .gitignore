@@ -1,0 +1,16 @@
+.htaccess
+log
+boot/config.php
+.DS_Store
+storage
+thumb.db
+update.sh
+config
+service/uglifyjs/tmp/*
+static/cms-custom-assets
+users/*
+!users/__init
+users/__init/config.php
+users/__init/config_template.php
+service/slir/cache/*
+service/slir/slirconfig.class.php
