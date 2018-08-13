@@ -1,16 +1,7 @@
 {
 	"menu":
 	{
-		"my-menu":
-		{
-			"icon":"files-o",
-			"title":"Meu menu",
-			"subs":
-			{
-				"exemplo-1":{ "link":"page://list-content/exemplo-1", "title":"Exemplo 1" },
-				"exemplo-2":{ "link":"page://list-content/exemplo-2", "title":"Exemplo 2" }
-			}
-		}
+		
 	},
 	
 	"init":null

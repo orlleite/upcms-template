@@ -1,0 +1,50 @@
+{
+	"type":"default-edition",
+	"title":"Categorias",
+	"icon":"files-o",
+
+	"list":
+	{
+		"title":"Categorias",
+		"showid":false,
+		"removable":true,
+		"addable":true,
+		"editable":true,
+		"allow-custom-order":true,
+		"page-limit":30,
+		"open-add-as":"modal",
+		"open-edit-as":"modal",
+		"group-by":"data",
+		"fields":{
+			"name":{ "size":12 }
+			}
+	},
+
+	"add":
+	{
+		"title":"Categoria",
+		"submit-button-name":"Criar",
+		"redirect-after-submit":"close-refresh",
+		"modal-params":{ "fullscreen":false },
+		"message":{
+			"save":"Categoria criada com sucesso.",
+			"validation":"first-invalid-field"
+			},
+
+		"mode":"tabs"
+	},
+
+	"edit":
+	{
+		"title":"Categoria",
+		"submit-button-name":"Salvar",
+		"redirect-after-submit":"close-refresh",
+		"modal-params":{ "fullscreen":false },
+		"message":{
+			"save":"Categoria editada com sucesso.",
+			"validation":"first-invalid-field"
+			},
+
+		"mode":"tabs"
+	}
+}

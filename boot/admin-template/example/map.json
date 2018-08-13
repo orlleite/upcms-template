@@ -1,0 +1,22 @@
+{
+	"id":"id",
+	"table":"categories",
+	"where":{},
+	"defaults":{},
+	"orderby":[["name", "ASC"]],
+	"reltables":{},
+	"fields":
+	{
+		"name":{ 
+			"title":"Nome", "type":"simpletext", "required":true,
+			"validation":
+			{
+				"rules":
+				{
+					"not-empty":{ "message":"Preencha o nome", "icon":"remove", "class":"has-error" },
+					"unique":{ "message":"Já existe outra categoria com este nome", "icon":"remove", "class":"has-error" }
+				}
+			}
+		}
+	}
+}
